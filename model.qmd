@@ -7,16 +7,13 @@ format:
 
 ```{python}
 import duckdb
-import numpy as np
 from pandas import get_dummies
-from sklearn import preprocessing
 from sklearn.linear_model import LinearRegression
 
 from vetiver import VetiverModel
 from pins import board_folder
 from vetiver import vetiver_pin_write
 from vetiver import VetiverAPI
-from vetiver import vetiver_endpoint, predict
 ```
 
 ## Get Data
