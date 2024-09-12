@@ -63,5 +63,5 @@ vetiver_pin_write(model_board, v)
 
 ```{python}
 v_api = VetiverAPI(v, check_prototype=True)
-v_api.run(port=8080)
+# v_api.run(port=8080)
 ```
