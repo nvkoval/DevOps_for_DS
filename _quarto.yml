@@ -1,2 +1,4 @@
 project:
+  render:
+    - eda.qmd
   output-dir: docs
