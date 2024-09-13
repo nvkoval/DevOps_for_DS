@@ -1,0 +1,8 @@
+duckdb
+palmerpenguins
+seaborn
+matplotlib
+shiny
+pandas
+scikit-learn
+vetiver
