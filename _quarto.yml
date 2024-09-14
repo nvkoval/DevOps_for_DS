@@ -1,3 +1,2 @@
 project:
-  title: "eda_quarto"
-  output-dir: gh-pages
+  output-dir: docs
