@@ -1,4 +1,3 @@
 project:
-  render:
-    - eda.qmd
+  title: "eda_quarto"
   output-dir: docs

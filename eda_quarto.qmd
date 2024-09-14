@@ -9,7 +9,6 @@ format:
 
 ```{python}
 import duckdb
-from palmerpenguins import penguins
 import seaborn as sns
 import matplotlib.pyplot as plt
 
