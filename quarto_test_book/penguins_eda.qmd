@@ -1,0 +1,43 @@
+---
+title: "Penguins EDA"
+format:
+    html:
+        code-fold: true
+---
+
+## Penguin Size and Mass by Sex and Species
+
+```{python}
+import duckdb
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+con = duckdb.connect('my-db.duckdb')
+df = con.execute("SELECT * FROM penguins").fetchdf().dropna()
+con.close()
+```
+
+```{python}
+summary_df = (
+    df.groupby(['species', 'sex'])
+      .agg({col: 'mean' for col in df.columns if col.endswith('mm') or col.endswith('g')})
+      .reset_index()
+)
+summary_df
+```
+
+## Penguin Size vs Mass by Species
+
+```{python}
+sns.lmplot(
+    data=df,
+    x='bill_length_mm',
+    y='body_mass_g',
+    hue='species',
+    aspect=1.5,
+    height=6,
+    legend=False
+)
+plt.legend(loc='upper left', bbox_to_anchor=(0.05, 0.95), title='Species')
+plt.show()
+```
