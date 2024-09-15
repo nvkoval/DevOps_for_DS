@@ -1,0 +1,42 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Test Book",
+    "section": "",
+    "text": "Preface\nThis is a Test Quarto book.",
+    "crumbs": [
+      "Preface"
+    ]
+  },
+  {
+    "objectID": "load_data.html",
+    "href": "load_data.html",
+    "title": "1  Data Load",
+    "section": "",
+    "text": "Load data to DuckDB\n\n\nCode\nimport duckdb\nfrom palmerpenguins import load_penguins\n\ncon = duckdb.connect('my-db.duckdb')\ndf = load_penguins()\ncon.execute('CREATE TABLE IF NOT EXISTS penguins AS SELECT * FROM df')\ncon.close()",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Data Load</span>"
+    ]
+  },
+  {
+    "objectID": "penguins_eda.html",
+    "href": "penguins_eda.html",
+    "title": "2  Penguins EDA",
+    "section": "",
+    "text": "2.1 Penguin Size and Mass by Sex and Species\nCode\nimport duckdb\nimport seaborn as sns\nimport matplotlib.pyplot as plt\n\ncon = duckdb.connect('my-db.duckdb')\ndf = con.execute(\"SELECT * FROM penguins\").fetchdf().dropna()\ncon.close()\nCode\nsummary_df = (\n    df.groupby(['species', 'sex'])\n      .agg({col: 'mean' for col in df.columns if col.endswith('mm') or col.endswith('g')})\n      .reset_index()\n)\nsummary_df\n\n\n\n\n\n\n\n\n\nspecies\nsex\nbill_length_mm\nbill_depth_mm\nflipper_length_mm\nbody_mass_g\n\n\n\n\n0\nAdelie\nfemale\n37.257534\n17.621918\n187.794521\n3368.835616\n\n\n1\nAdelie\nmale\n40.390411\n19.072603\n192.410959\n4043.493151\n\n\n2\nChinstrap\nfemale\n46.573529\n17.588235\n191.735294\n3527.205882\n\n\n3\nChinstrap\nmale\n51.094118\n19.252941\n199.911765\n3938.970588\n\n\n4\nGentoo\nfemale\n45.563793\n14.237931\n212.706897\n4679.741379\n\n\n5\nGentoo\nmale\n49.473770\n15.718033\n221.540984\n5484.836066",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Penguins EDA</span>"
+    ]
+  },
+  {
+    "objectID": "penguins_eda.html#penguin-size-vs-mass-by-species",
+    "href": "penguins_eda.html#penguin-size-vs-mass-by-species",
+    "title": "2  Penguins EDA",
+    "section": "2.2 Penguin Size vs Mass by Species",
+    "text": "2.2 Penguin Size vs Mass by Species\n\n\nCode\nsns.lmplot(\n    data=df,\n    x='bill_length_mm',\n    y='body_mass_g',\n    hue='species',\n    aspect=1.5,\n    height=6,\n    legend=False\n)\nplt.legend(loc='upper left', bbox_to_anchor=(0.05, 0.95), title='Species')\nplt.show()",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Penguins EDA</span>"
+    ]
+  }
+]
