@@ -14,7 +14,7 @@
     "href": "load_data.html",
     "title": "1  Data Load",
     "section": "",
-    "text": "2 Data Load\nLoad data to DuckDB\n\n\nCode\nimport duckdb\nfrom palmerpenguins import load_penguins\n\ncon = duckdb.connect('my-db.duckdb')\ndf = load_penguins()\ncon.execute('CREATE TABLE IF NOT EXISTS penguins AS SELECT * FROM df')\ncon.close()",
+    "text": "Load data to DuckDB\n\n\nCode\nimport duckdb\nfrom palmerpenguins import load_penguins\n\ncon = duckdb.connect('my-db.duckdb')\ndf = load_penguins()\ncon.execute('CREATE TABLE IF NOT EXISTS penguins AS SELECT * FROM df')\ncon.close()",
     "crumbs": [
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>Data Load</span>"
     ]
