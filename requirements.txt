@@ -6,4 +6,3 @@ shiny
 pandas
 scikit-learn
 vetiver
-tinytext
