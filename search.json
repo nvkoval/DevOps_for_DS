@@ -1,42 +1,44 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Test Book",
+    "objectID": "4_app.html",
+    "href": "4_app.html",
+    "title": "Penguin Mass Predictor",
     "section": "",
-    "text": "Preface\nThis is a Test Quarto book.",
-    "crumbs": [
-      "Preface"
-    ]
+    "text": "#| standalone: true\n#| eval: true\nfrom shiny import App, render, ui, reactive\nimport requests\nimport logging\n\napi_url = \"http://127.0.0.1:8080/predict\"\nheaders = {\"Content-Type\": \"application/json\"}\n\n\nlogging.basicConfig(\n    format='%(asctime)s - %(message)s',\n    level=logging.INFO\n)\n\napi_ui = ui.page_fluid(\n    ui.layout_sidebar(\n        ui.sidebar(\n            [ui.input_slider(\"bill_length\",\n                             \"Bill Length (mm)\",\n                             min=30,\n                             max=60,\n                             value=45,\n                             step=0.1),\n             ui.input_select(\"sex\", \"Sex\",\n                             choices=[\"Male\", \"Female\"]),\n             ui.input_select(\"species\", \"Species\",\n                             choices=[\"Adelie\", \"Chinstrap\", \"Gentoo\"]),\n             ui.input_action_button(\"predict\", \"Predict\")]\n        ),\n\n        ui.h3(\"Penguin Parameters\"),\n\n        ui.output_text(\"bill_length_out\"),\n        ui.output_text(\"sex_out\"),\n        ui.output_text(\"species_out\"),\n\n        ui.h3(\"Predicted Penguin Mass (g)\"),\n        ui.output_text(\"pred_out\"),\n    ),\n    title=\"Penguin Mass Predictor\",\n)\n\n\ndef server(input, output, session):\n    logging.info(\"App start\")\n\n    @render.text\n    def bill_length_out():\n        return f\"Bill Length (mm): {input.bill_length()}\"\n\n    @render.text\n    def sex_out():\n        return f\"Sex: {input.sex()}\"\n\n    @render.text\n    def species_out():\n        return f\"Species: {input.species()}\"\n\n    @reactive.Calc\n    def vals():\n        d = [{\n            \"bill_length_mm\": input.bill_length(),\n            \"sex_male\": input.sex() == \"Male\",\n            \"species_Gentoo\": input.species() == \"Gentoo\",\n            \"species_Chinstrap\": input.species() == \"Chinstrap\"\n        }]\n\n        return d\n\n    @reactive.Calc\n    @reactive.event(input.predict)\n    def pred():\n        logging.info(\"Request Made\")\n        r = requests.post(api_url, json=vals())\n        if r.status_code != 200:\n            logging.error(f\"Bad Request. HTTP error returned.\\\n                          Status Code: {r.status_code}\")\n            print(f\"Status Code: {r.status_code}\")\n            print(f\"Request: {r.headers}\")\n            print(f\"Request: {r.content}\")\n            return \"Bad Request\"\n\n        logging.info(\"Request Returned\")\n        return r.json().get('predict')[0]\n\n    @output\n    @render.text\n    def vals_out():\n        return f\"{vals()}\"\n\n    @output\n    @render.text\n    def pred_out():\n        return f\"{round(pred(), 3)}\"\n\n\napp = App(api_ui, server)"
   },
   {
-    "objectID": "load_data.html",
-    "href": "load_data.html",
-    "title": "1  Data Load",
+    "objectID": "2_eda.html",
+    "href": "2_eda.html",
+    "title": "Penguins EDA",
     "section": "",
-    "text": "Load data to DuckDB\n\n\nCode\nimport duckdb\nfrom palmerpenguins import load_penguins\n\ncon = duckdb.connect('my-db.duckdb')\ndf = load_penguins()\ncon.execute('CREATE TABLE IF NOT EXISTS penguins AS SELECT * FROM df')\ncon.close()",
-    "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Data Load</span>"
-    ]
+    "text": "species\nsex\nbill_length_mm\nbill_depth_mm\nflipper_length_mm\nbody_mass_g\n\n\n\n\n0\nAdelie\nfemale\n37.257534\n17.621918\n187.794521\n3368.835616\n\n\n1\nAdelie\nmale\n40.390411\n19.072603\n192.410959\n4043.493151\n\n\n2\nChinstrap\nfemale\n46.573529\n17.588235\n191.735294\n3527.205882\n\n\n3\nChinstrap\nmale\n51.094118\n19.252941\n199.911765\n3938.970588\n\n\n4\nGentoo\nfemale\n45.563793\n14.237931\n212.706897\n4679.741379\n\n\n5\nGentoo\nmale\n49.473770\n15.718033\n221.540984\n5484.836066"
   },
   {
-    "objectID": "penguins_eda.html",
-    "href": "penguins_eda.html",
-    "title": "2  Penguins EDA",
+    "objectID": "2_eda.html#penguin-size-and-mass-by-sex-and-species",
+    "href": "2_eda.html#penguin-size-and-mass-by-sex-and-species",
+    "title": "Penguins EDA",
     "section": "",
-    "text": "2.1 Penguin Size and Mass by Sex and Species\nCode\nimport duckdb\nimport seaborn as sns\nimport matplotlib.pyplot as plt\n\ncon = duckdb.connect('my-db.duckdb')\ndf = con.execute(\"SELECT * FROM penguins\").fetchdf().dropna()\ncon.close()\nCode\nsummary_df = (\n    df.groupby(['species', 'sex'])\n      .agg({col: 'mean' for col in df.columns if col.endswith('mm') or col.endswith('g')})\n      .reset_index()\n)\nsummary_df\n\n\n\n\n\n\n\n\n\nspecies\nsex\nbill_length_mm\nbill_depth_mm\nflipper_length_mm\nbody_mass_g\n\n\n\n\n0\nAdelie\nfemale\n37.257534\n17.621918\n187.794521\n3368.835616\n\n\n1\nAdelie\nmale\n40.390411\n19.072603\n192.410959\n4043.493151\n\n\n2\nChinstrap\nfemale\n46.573529\n17.588235\n191.735294\n3527.205882\n\n\n3\nChinstrap\nmale\n51.094118\n19.252941\n199.911765\n3938.970588\n\n\n4\nGentoo\nfemale\n45.563793\n14.237931\n212.706897\n4679.741379\n\n\n5\nGentoo\nmale\n49.473770\n15.718033\n221.540984\n5484.836066",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Penguins EDA</span>"
-    ]
+    "text": "species\nsex\nbill_length_mm\nbill_depth_mm\nflipper_length_mm\nbody_mass_g\n\n\n\n\n0\nAdelie\nfemale\n37.257534\n17.621918\n187.794521\n3368.835616\n\n\n1\nAdelie\nmale\n40.390411\n19.072603\n192.410959\n4043.493151\n\n\n2\nChinstrap\nfemale\n46.573529\n17.588235\n191.735294\n3527.205882\n\n\n3\nChinstrap\nmale\n51.094118\n19.252941\n199.911765\n3938.970588\n\n\n4\nGentoo\nfemale\n45.563793\n14.237931\n212.706897\n4679.741379\n\n\n5\nGentoo\nmale\n49.473770\n15.718033\n221.540984\n5484.836066"
   },
   {
-    "objectID": "penguins_eda.html#penguin-size-vs-mass-by-species",
-    "href": "penguins_eda.html#penguin-size-vs-mass-by-species",
-    "title": "2  Penguins EDA",
-    "section": "2.2 Penguin Size vs Mass by Species",
-    "text": "2.2 Penguin Size vs Mass by Species\n\n\nCode\nsns.lmplot(\n    data=df,\n    x='bill_length_mm',\n    y='body_mass_g',\n    hue='species',\n    aspect=1.5,\n    height=6,\n    legend=False\n)\nplt.legend(loc='upper left', bbox_to_anchor=(0.05, 0.95), title='Species')\nplt.show()",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Penguins EDA</span>"
-    ]
+    "objectID": "2_eda.html#penguin-size-vs-mass-by-species",
+    "href": "2_eda.html#penguin-size-vs-mass-by-species",
+    "title": "Penguins EDA",
+    "section": "Penguin Size vs Mass by Species",
+    "text": "Penguin Size vs Mass by Species"
+  },
+  {
+    "objectID": "1_index.html",
+    "href": "1_index.html",
+    "title": "Labs from DevOps for DS",
+    "section": "",
+    "text": "This is a test Quarto website created as part of the exercises from DevOps for Data Science."
+  },
+  {
+    "objectID": "3_model.html",
+    "href": "3_model.html",
+    "title": "Model",
+    "section": "",
+    "text": "Get Data\n\n\n\n\n\n\n\n\n\nspecies\nisland\nbill_length_mm\nbill_depth_mm\nflipper_length_mm\nbody_mass_g\nsex\nyear\n\n\n\n\n0\nAdelie\nTorgersen\n39.1\n18.7\n181.0\n3750.0\nmale\n2007\n\n\n1\nAdelie\nTorgersen\n39.5\n17.4\n186.0\n3800.0\nfemale\n2007\n\n\n2\nAdelie\nTorgersen\n40.3\n18.0\n195.0\n3250.0\nfemale\n2007\n\n\n\n\n\n\n\n\n\nDefine Model and Fit\n\nX = get_dummies(df[[\"bill_length_mm\", \"species\", \"sex\"]], drop_first=True)\ny = df[\"body_mass_g\"]\n\nmodel = LinearRegression().fit(X, y)\n\n\n\nGet some information\n\n\nR^2 0.8555\nIntercept 2169.2697\nColumns ['bill_length_mm' 'species_Chinstrap' 'species_Gentoo' 'sex_male']\nCoefficients [  32.53688677 -298.76553447 1094.86739145  547.36692408]\n\n\n\n\nTurn into Vetiver Model"
   }
 ]
