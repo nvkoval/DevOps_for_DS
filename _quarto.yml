@@ -1,2 +1,20 @@
 project:
+  type: website
   output-dir: docs
+
+website:
+  title: "Penguin Mass Predict"
+  navbar:
+    left:
+      - href: 1_index.qmd
+        text: Home
+      - href: 2_eda.qmd
+        text: EDA
+      - href: 3_model.qmd
+        text: Model
+      - href: 4_app.qmd
+        text: Predict
+
+format:
+  html:
+    toc: false

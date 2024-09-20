@@ -1,0 +1,5 @@
+---
+title: "Labs from DevOps for DS"
+---
+
+This is a test Quarto website created as part of the exercises from [DevOps for Data Science](https://do4ds.com/).
