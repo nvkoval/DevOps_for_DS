@@ -51,7 +51,7 @@ v = VetiverModel(model, model_name='penguin_model', prototype_data=X)
 
 # Save to Board
 model_board = board_folder(
-    "/data/model",
+    "./data/model",
     allow_pickle_read=True
 )
 
