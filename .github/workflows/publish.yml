@@ -1,20 +1,15 @@
-name: Quarto Publish
-
 on:
-  workflow_dispatch:
   push:
     branches: main
 
-permissions:
-  contents: write
-  pages: write
-  id-token: write
+name: Quarto Publish
 
 jobs:
-  build:
+  build-deploy:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pages: write
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -37,14 +32,3 @@ jobs:
           render: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  deploy:
-    environment:
-      name: github-pages
-    runs-on: ubuntu-latest
-    needs:
-      build
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
