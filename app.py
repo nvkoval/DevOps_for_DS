@@ -74,9 +74,6 @@ def server(input, output, session):
         if r.status_code != 200:
             logging.error(f"Bad Request. HTTP error returned.\
                           Status Code: {r.status_code}")
-            print(f"Status Code: {r.status_code}")
-            print(f"Request: {r.headers}")
-            print(f"Request: {r.content}")
             return "Bad Request"
 
         logging.info("Request Returned")

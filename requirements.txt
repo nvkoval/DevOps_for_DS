@@ -1,9 +1,12 @@
+ipykernel==6.29.4
+jupyter
+
 duckdb
 palmerpenguins
-seaborn
 matplotlib
-shiny
+seaborn
 pandas
 scikit-learn
+shiny
 vetiver
 shinylive

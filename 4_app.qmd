@@ -5,10 +5,10 @@ filters:
   - shinylive
 ---
 
-:::{.column-screen-inset}
 ```{shinylive-python}
 #| standalone: true
 #| eval: true
+#| viewerHeight: 600
 from shiny import App, render, ui, reactive
 import requests
 import logging
@@ -106,4 +106,3 @@ def server(input, output, session):
 
 app = App(api_ui, server)
 ```
-:::
