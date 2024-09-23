@@ -1,10 +1,17 @@
 [
   {
-    "objectID": "4_app.html",
-    "href": "4_app.html",
-    "title": "Penguin Mass Predictor",
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Labs from DevOps for DS",
     "section": "",
-    "text": "#| standalone: true\n#| eval: true\nfrom shiny import App, render, ui, reactive\nimport requests\nimport logging\n\napi_url = \"http://127.0.0.1:8080/predict\"\nheaders = {\"Content-Type\": \"application/json\"}\n\n\nlogging.basicConfig(\n    format='%(asctime)s - %(message)s',\n    level=logging.INFO\n)\n\napi_ui = ui.page_fluid(\n    ui.layout_sidebar(\n        ui.sidebar(\n            [ui.input_slider(\"bill_length\",\n                             \"Bill Length (mm)\",\n                             min=30,\n                             max=60,\n                             value=45,\n                             step=0.1),\n             ui.input_select(\"sex\", \"Sex\",\n                             choices=[\"Male\", \"Female\"]),\n             ui.input_select(\"species\", \"Species\",\n                             choices=[\"Adelie\", \"Chinstrap\", \"Gentoo\"]),\n             ui.input_action_button(\"predict\", \"Predict\")]\n        ),\n\n        ui.h3(\"Penguin Parameters\"),\n\n        ui.output_text(\"bill_length_out\"),\n        ui.output_text(\"sex_out\"),\n        ui.output_text(\"species_out\"),\n\n        ui.h3(\"Predicted Penguin Mass (g)\"),\n        ui.output_text(\"pred_out\"),\n    ),\n    title=\"Penguin Mass Predictor\",\n)\n\n\ndef server(input, output, session):\n    logging.info(\"App start\")\n\n    @render.text\n    def bill_length_out():\n        return f\"Bill Length (mm): {input.bill_length()}\"\n\n    @render.text\n    def sex_out():\n        return f\"Sex: {input.sex()}\"\n\n    @render.text\n    def species_out():\n        return f\"Species: {input.species()}\"\n\n    @reactive.Calc\n    def vals():\n        d = [{\n            \"bill_length_mm\": input.bill_length(),\n            \"sex_male\": input.sex() == \"Male\",\n            \"species_Gentoo\": input.species() == \"Gentoo\",\n            \"species_Chinstrap\": input.species() == \"Chinstrap\"\n        }]\n\n        return d\n\n    @reactive.Calc\n    @reactive.event(input.predict)\n    def pred():\n        logging.info(\"Request Made\")\n        r = requests.post(api_url, json=vals())\n        if r.status_code != 200:\n            logging.error(f\"Bad Request. HTTP error returned.\\\n                          Status Code: {r.status_code}\")\n            print(f\"Status Code: {r.status_code}\")\n            print(f\"Request: {r.headers}\")\n            print(f\"Request: {r.content}\")\n            return \"Bad Request\"\n\n        logging.info(\"Request Returned\")\n        return r.json().get('predict')[0]\n\n    @output\n    @render.text\n    def vals_out():\n        return f\"{vals()}\"\n\n    @output\n    @render.text\n    def pred_out():\n        return f\"{round(pred(), 3)}\"\n\n\napp = App(api_ui, server)"
+    "text": "This is a test Quarto website created as part of the exercises from DevOps for Data Science."
+  },
+  {
+    "objectID": "3_model.html",
+    "href": "3_model.html",
+    "title": "Model",
+    "section": "",
+    "text": "Get Data\n\n\n\n\n\n\n\n\n\nspecies\nisland\nbill_length_mm\nbill_depth_mm\nflipper_length_mm\nbody_mass_g\nsex\nyear\n\n\n\n\n0\nAdelie\nTorgersen\n39.1\n18.7\n181.0\n3750.0\nmale\n2007\n\n\n1\nAdelie\nTorgersen\n39.5\n17.4\n186.0\n3800.0\nfemale\n2007\n\n\n2\nAdelie\nTorgersen\n40.3\n18.0\n195.0\n3250.0\nfemale\n2007\n\n\n\n\n\n\n\n\n\nDefine Model and Fit\n\nX = get_dummies(df[[\"bill_length_mm\", \"species\", \"sex\"]], drop_first=True)\ny = df[\"body_mass_g\"]\n\nmodel = LinearRegression().fit(X, y)\n\n\n\nGet some information\n\n\nR^2 0.8555\nIntercept 2169.2697\nColumns ['bill_length_mm' 'species_Chinstrap' 'species_Gentoo' 'sex_male']\nCoefficients [  32.53688677 -298.76553447 1094.86739145  547.36692408]\n\n\n\n\nTurn into Vetiver"
   },
   {
     "objectID": "2_eda.html",
@@ -28,17 +35,10 @@
     "text": "Penguin Size vs Mass by Species"
   },
   {
-    "objectID": "1_index.html",
-    "href": "1_index.html",
-    "title": "Labs from DevOps for DS",
+    "objectID": "4_app.html",
+    "href": "4_app.html",
+    "title": "Penguin Mass Predictor",
     "section": "",
-    "text": "This is a test Quarto website created as part of the exercises from DevOps for Data Science."
-  },
-  {
-    "objectID": "3_model.html",
-    "href": "3_model.html",
-    "title": "Model",
-    "section": "",
-    "text": "Get Data\n\n\n\n\n\n\n\n\n\nspecies\nisland\nbill_length_mm\nbill_depth_mm\nflipper_length_mm\nbody_mass_g\nsex\nyear\n\n\n\n\n0\nAdelie\nTorgersen\n39.1\n18.7\n181.0\n3750.0\nmale\n2007\n\n\n1\nAdelie\nTorgersen\n39.5\n17.4\n186.0\n3800.0\nfemale\n2007\n\n\n2\nAdelie\nTorgersen\n40.3\n18.0\n195.0\n3250.0\nfemale\n2007\n\n\n\n\n\n\n\n\n\nDefine Model and Fit\n\nX = get_dummies(df[[\"bill_length_mm\", \"species\", \"sex\"]], drop_first=True)\ny = df[\"body_mass_g\"]\n\nmodel = LinearRegression().fit(X, y)\n\n\n\nGet some information\n\n\nR^2 0.8555\nIntercept 2169.2697\nColumns ['bill_length_mm' 'species_Chinstrap' 'species_Gentoo' 'sex_male']\nCoefficients [  32.53688677 -298.76553447 1094.86739145  547.36692408]\n\n\n\n\nTurn into Vetiver Model"
+    "text": "#| standalone: true\n#| eval: true\n#| viewerHeight: 600\nfrom shiny import App, render, ui, reactive\nimport requests\nimport logging\n\napi_url = \"http://127.0.0.1:8080/predict\"\nheaders = {\"Content-Type\": \"application/json\"}\n\n\nlogging.basicConfig(\n    format='%(asctime)s - %(message)s',\n    level=logging.INFO\n)\n\napi_ui = ui.page_fluid(\n    ui.layout_sidebar(\n        ui.sidebar(\n            [ui.input_slider(\"bill_length\",\n                             \"Bill Length (mm)\",\n                             min=30,\n                             max=60,\n                             value=45,\n                             step=0.1),\n             ui.input_select(\"sex\", \"Sex\",\n                             choices=[\"Male\", \"Female\"]),\n             ui.input_select(\"species\", \"Species\",\n                             choices=[\"Adelie\", \"Chinstrap\", \"Gentoo\"]),\n             ui.input_action_button(\"predict\", \"Predict\")]\n        ),\n\n        ui.h3(\"Penguin Parameters\"),\n\n        ui.output_text(\"bill_length_out\"),\n        ui.output_text(\"sex_out\"),\n        ui.output_text(\"species_out\"),\n\n        ui.h3(\"Predicted Penguin Mass (g)\"),\n        ui.output_text(\"pred_out\"),\n    ),\n    title=\"Penguin Mass Predictor\",\n)\n\n\ndef server(input, output, session):\n    logging.info(\"App start\")\n\n    @render.text\n    def bill_length_out():\n        return f\"Bill Length (mm): {input.bill_length()}\"\n\n    @render.text\n    def sex_out():\n        return f\"Sex: {input.sex()}\"\n\n    @render.text\n    def species_out():\n        return f\"Species: {input.species()}\"\n\n    @reactive.Calc\n    def vals():\n        d = [{\n            \"bill_length_mm\": input.bill_length(),\n            \"sex_male\": input.sex() == \"Male\",\n            \"species_Gentoo\": input.species() == \"Gentoo\",\n            \"species_Chinstrap\": input.species() == \"Chinstrap\"\n        }]\n\n        return d\n\n    @reactive.Calc\n    @reactive.event(input.predict)\n    def pred():\n        logging.info(\"Request Made\")\n        r = requests.post(api_url, json=vals())\n        if r.status_code != 200:\n            logging.error(f\"Bad Request. HTTP error returned.\\\n                          Status Code: {r.status_code}\")\n            print(f\"Status Code: {r.status_code}\")\n            print(f\"Request: {r.headers}\")\n            print(f\"Request: {r.content}\")\n            return \"Bad Request\"\n\n        logging.info(\"Request Returned\")\n        return r.json().get('predict')[0]\n\n    @output\n    @render.text\n    def vals_out():\n        return f\"{vals()}\"\n\n    @output\n    @render.text\n    def pred_out():\n        return f\"{round(pred(), 3)}\"\n\n\napp = App(api_ui, server)"
   }
 ]
