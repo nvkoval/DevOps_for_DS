@@ -1,2 +1,2 @@
 
-Test Quarto website created as part of the exercises from [DevOps for Data Science](https://do4ds.com/) avalaible from [GitHub Pages](https://nvkoval.github.io/DevOps_for_DS/)
+Test Quarto website was created as part of the exercises from the book [DevOps for Data Science](https://do4ds.com/) by Alex K Gold and is available from [GitHub Pages](https://nvkoval.github.io/DevOps_for_DS/).
